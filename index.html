@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMU LOG</title>
+  <meta name="description" content="evoli が作ってきたWebアプリを一覧・管理できるポータル AMU LOG。音楽・ゲーム・ユーティリティ・AIなど35本以上を収録。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:           #f8f8f7;
+      --bg-card:      #ffffff;
+      --border:       #e6e6e3;
+      --border-card:  #ececea;
+      --text:         #111110;
+      --text-2:       #6f6e69;
+      --text-3:       #b0afa9;
+      --tag-bg:       #f0f0ee;
+      --tag-text:     #58574f;
+      --accent:       #111110;
+      --shadow-sm:    0 1px 3px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.04);
+      --shadow-hover: 0 8px 32px rgba(0,0,0,.10), 0 3px 10px rgba(0,0,0,.05);
+      --r:            14px;
+      --r-sm:         8px;
+      --ease:         0.2s cubic-bezier(.4,0,.2,1);
+      --logo-h:       80px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ══ HEADER ══════════════════════════════════════════ */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(248,248,247,.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 clamp(1.5rem,5vw,4rem);
+    }
+    .hd {
+      max-width: 1300px; margin: 0 auto;
+      height: 58px;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .brand {
+      font-size: 1.15rem; font-weight: 700; letter-spacing: -.03em;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: .45rem;
+      user-select: none;
+    }
+    .brand-dot { width:7px; height:7px; border-radius:50%; background:#111; flex-shrink:0; }
+    .brand em { font-style:italic; font-weight:300; color: var(--text-2); margin-left:1px; }
+    .hd-right { display:flex; align-items:center; gap:.6rem; }
+    .pill {
+      font-size: .72rem; font-weight: 500; color: var(--text-3);
+      background: var(--tag-bg); border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 99px;
+    }
+    /* Edit mode toggle */
+    #edit-toggle {
+      font-family:inherit; font-size:.75rem; font-weight:500;
+      padding:5px 13px; border-radius:99px;
+      border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text-2);
+      cursor: pointer; transition: all var(--ease);
+      display: flex; align-items: center; gap:.35rem;
+    }
+    #edit-toggle:hover { border-color:#bbb; color:var(--text); }
+    #edit-toggle.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+    /* ══ HERO ════════════════════════════════════════════ */
+    .hero {
+      padding: clamp(2.5rem,7vw,5rem) clamp(1.5rem,5vw,4rem) 2rem;
+      max-width: 1300px; margin: 0 auto;
+    }
+    .hero-label { font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); margin-bottom:.8rem; }
+    .hero h1 { font-size:clamp(1.9rem,4.5vw,3rem); font-weight:700; letter-spacing:-.035em; line-height:1.1; margin-bottom:.85rem; }
+    .hero h1 span { color:var(--text-2); }
+    .hero-desc { font-size:.95rem; color:var(--text-2); max-width:48ch; line-height:1.7; }
+
+    /* ══ CONTROLS ════════════════════════════════════════ */
+    .ctrl { padding: 0 clamp(1.5rem,5vw,4rem); max-width:1300px; margin:0 auto 1.8rem; display:flex; flex-wrap:wrap; align-items:center; gap:.75rem; }
+    .search {
+      font-family:inherit; font-size:.85rem;
+      padding: 9px 15px 9px 38px; border-radius:var(--r-sm);
+      border: 1px solid var(--border); background: var(--bg-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23b0afa9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 11px center;
+      color:var(--text); outline:none; width:100%; max-width:360px;
+      transition: border-color var(--ease), box-shadow var(--ease);
+    }
+    .search:focus { border-color:#bbb; box-shadow:0 0 0 3px rgba(0,0,0,.05); }
+    .search::placeholder { color:var(--text-3); }
+    .filters { display:flex; flex-wrap:wrap; gap:.4rem; }
+    .fbtn {
+      font-family:inherit; font-size:.75rem; font-weight:500;
+      padding:5px 13px; border-radius:99px;
+      border:1px solid var(--border); background:var(--bg-card); color:var(--text-2);
+      cursor:pointer; transition:all var(--ease); white-space:nowrap; outline:none;
+    }
+    .fbtn:hover { border-color:#bbb; color:var(--text); }
+    .fbtn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+    /* ══ GRID ════════════════════════════════════════════ */
+    .grid-wrap { padding:0 clamp(1.5rem,5vw,4rem); max-width:1300px; margin:0 auto; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:1.1rem; }
+    .sec-label {
+      grid-column:1/-1; font-size:.68rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+      color:var(--text-3); padding-bottom:.3rem; border-bottom:1px solid var(--border); margin-top:.5rem;
+    }
+    .empty { grid-column:1/-1; text-align:center; padding:3rem 1rem; color:var(--text-3); font-size:.875rem; }
+
+    /* ══ CARD ════════════════════════════════════════════ */
+    .card {
+      background:var(--bg-card); border:1px solid var(--border-card); border-radius:var(--r);
+      display:flex; flex-direction:column;
+      box-shadow:var(--shadow-sm);
+      transition:transform var(--ease), box-shadow var(--ease), border-color var(--ease);
+      overflow:hidden; position:relative;
+    }
+    .card:not(.edit-mode):hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); border-color:#d8d8d5; }
+
+    /* Logo area */
+    .card-logo {
+      width:100%; height:var(--logo-h); overflow:hidden;
+      background: var(--bg); border-bottom:1px solid var(--border-card);
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0; position:relative;
+    }
+    .card-logo img { width:100%; height:100%; object-fit:cover; display:block; }
+    .card-logo .logo-emoji { font-size:2rem; }
+    .card-logo-upload {
+      position:absolute; inset:0; background:rgba(0,0,0,.45);
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; transition:opacity var(--ease); cursor:pointer;
+      font-size:.75rem; color:#fff; font-weight:500; gap:.3rem; flex-direction:column;
+    }
+    .card.edit-mode .card-logo:hover .card-logo-upload { opacity:1; }
+    .card-logo-upload-icon { font-size:1.4rem; }
+
+    /* Body */
+    .card-body { padding:1.25rem; display:flex; flex-direction:column; gap:.6rem; flex:1; }
+    .card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:.5rem; }
+    .card-icon-sm {
+      width:36px; height:36px; border-radius:9px; flex-shrink:0;
+      background:var(--bg); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center; font-size:1.1rem;
+    }
+    .card-title { font-size:.95rem; font-weight:600; letter-spacing:-.01em; line-height:1.3; flex:1; }
+    .card-desc { font-size:.8rem; color:var(--text-2); line-height:1.65; flex:1; }
+    .card-tags { display:flex; flex-wrap:wrap; gap:.3rem; }
+    .tag {
+      font-size:.65rem; font-weight:500; letter-spacing:.02em;
+      padding:2px 8px; border-radius:99px;
+      background:var(--tag-bg); color:var(--tag-text); border:1px solid var(--border);
+      white-space:nowrap;
+    }
+    .tag.hi { background:#111; color:#fff; border-color:#111; }
+
+    /* Links row */
+    .card-links { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.1rem; }
+    .card-link {
+      display:inline-flex; align-items:center; gap:.25rem;
+      font-size:.7rem; font-weight:500; color:var(--text-2);
+      padding:4px 10px; border-radius:var(--r-sm);
+      border:1px solid var(--border); background:var(--bg);
+      text-decoration:none; transition:all var(--ease); white-space:nowrap;
+    }
+    .card-link:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .card-link-icon { font-size:.9rem; }
+    .card-link.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .card-link.primary:hover { opacity:.85; }
+
+    /* Edit & Delete direct buttons */
+    .card-ctrls {
+      position:absolute; top:.6rem; right:.6rem;
+      display:none; gap:.35rem; z-index:20;
+    }
+    body.editing .card-ctrls { display:flex; }
+    .card-btn {
+      width:30px; height:30px; border-radius:8px;
+      background:rgba(255,255,255,.92); border:1px solid var(--border);
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      font-size:.9rem; transition:all var(--ease);
+      backdrop-filter:blur(4px); box-shadow:0 2px 5px rgba(0,0,0,.08);
+    }
+    .card-btn:hover { transform:scale(1.08); }
+    .card-btn.btn-edit:hover { background:#111; color:#fff; border-color:#111; }
+    .card-btn.btn-del { color:#d32f2f; }
+    .card-btn.btn-del:hover { background:#d32f2f; color:#fff; border-color:#d32f2f; }
+    body.editing .card:not(.edit-mode) .card-logo { cursor:default; }
+
+    /* ══ EDIT MODE CARD ══════════════════════════════════ */
+    .card.edit-mode { border-color:#0070f3; box-shadow:0 0 0 2px rgba(0,112,243,.15), var(--shadow-hover); }
+    .edit-form { padding:.9rem 1.25rem 1.25rem; display:flex; flex-direction:column; gap:.7rem; border-top:1px solid var(--border); }
+    .ef-row { display:flex; flex-direction:column; gap:.25rem; }
+    .ef-label { font-size:.65rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-3); }
+    .ef-input, .ef-textarea {
+      font-family:inherit; font-size:.8rem; color:var(--text);
+      border:1px solid var(--border); border-radius:var(--r-sm);
+      background:var(--bg); padding:7px 10px; outline:none; width:100%;
+      transition:border-color var(--ease);
+    }
+    .ef-textarea { resize:vertical; min-height:70px; line-height:1.55; }
+    .ef-input:focus, .ef-textarea:focus { border-color:#0070f3; }
+    .ef-sub-label { font-size:.65rem; color:var(--text-3); margin-top:.1rem; }
+    /* Links editor */
+    .ef-links { display:flex; flex-direction:column; gap:.4rem; }
+    .ef-link-row { display:flex; gap:.4rem; align-items:center; }
+    .ef-link-row .ef-input { flex:1; }
+    .ef-link-del {
+      font-family:inherit; font-size:1rem; color:var(--text-3);
+      background:none; border:none; cursor:pointer; padding:0 4px;
+      transition:color var(--ease); flex-shrink:0;
+    }
+    .ef-link-del:hover { color:#e53935; }
+    .ef-add-link {
+      font-family:inherit; font-size:.75rem; font-weight:500; color:var(--text-2);
+      background:var(--tag-bg); border:1px dashed var(--border);
+      border-radius:var(--r-sm); padding:5px 10px; cursor:pointer;
+      transition:all var(--ease); align-self:flex-start;
+    }
+    .ef-add-link:hover { border-color:#bbb; color:var(--text); }
+    .ef-actions { display:flex; gap:.5rem; margin-top:.2rem; }
+    .ef-save {
+      font-family:inherit; font-size:.78rem; font-weight:600;
+      padding:7px 16px; border-radius:var(--r-sm);
+      background:var(--accent); color:#fff; border:none; cursor:pointer;
+      transition:opacity var(--ease); flex:1;
+    }
+    .ef-save:hover { opacity:.85; }
+    .ef-cancel {
+      font-family:inherit; font-size:.78rem; font-weight:500;
+      padding:7px 14px; border-radius:var(--r-sm);
+      background:var(--bg); color:var(--text-2); border:1px solid var(--border); cursor:pointer;
+      transition:all var(--ease);
+    }
+    .ef-cancel:hover { border-color:#bbb; color:var(--text); }
+
+    .ef-delete {
+      font-family:inherit; font-size:.78rem; font-weight:500;
+      padding:7px 14px; border-radius:var(--r-sm);
+      background:#fff0f0; color:#d32f2f; border:1px solid #ffcdd2; cursor:pointer;
+      transition:all var(--ease);
+    }
+    .ef-delete:hover { background:#d32f2f; color:#fff; border-color:#d32f2f; }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 1000;
+      background: #181817; color: #fff; padding: 12px 18px; border-radius: 10px;
+      font-size: .85rem; display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25); animation: toastUp 0.25s ease;
+    }
+    .toast-undo {
+      background: rgba(255,255,255,0.2); color: #fff; border: none;
+      padding: 4px 10px; border-radius: 6px; font-size: .78rem;
+      cursor: pointer; font-weight: 600; transition: background 0.2s;
+    }
+    .toast-undo:hover { background: rgba(255,255,255,0.35); }
+    @keyframes toastUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ══ FOOTER ══════════════════════════════════════════ */
+    footer {
+      max-width:1300px; margin:4rem auto 0;
+      padding:1.75rem clamp(1.5rem,5vw,4rem);
+      border-top:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    }
+    .ft-l { font-size:.78rem; color:var(--text-3); }
+    .ft-r { font-size:.75rem; color:var(--text-3); }
+
+    /* ══ ANIMS ═══════════════════════════════════════════ */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .card { animation:fadeUp .3s ease both; }
+    .card:nth-child(1){animation-delay:.02s}.card:nth-child(2){animation-delay:.05s}
+    .card:nth-child(3){animation-delay:.08s}.card:nth-child(4){animation-delay:.11s}
+    .card:nth-child(5){animation-delay:.14s}.card:nth-child(6){animation-delay:.17s}
+    .card:nth-child(7){animation-delay:.20s}.card:nth-child(8){animation-delay:.23s}
+    .card:nth-child(9){animation-delay:.26s}.card:nth-child(10){animation-delay:.29s}
+    .card:nth-child(n+11){animation-delay:.32s}
+
+    @media (max-width:580px) { .grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a href="#" class="brand"><span class="brand-dot"></span>AMU LOG<em> by evoli</em></a>
+    <div class="hd-right">
+      <span class="pill" id="app-count">-- apps</span>
+      <button id="edit-toggle" title="編集モードを切り替え">✏️ 編集</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <p class="hero-label">evoli's workspace</p>
+  <h1>作ってきた<br /><span>アプリ一覧</span></h1>
+  <p class="hero-desc">音楽・ゲーム・ユーティリティ・AI など、これまで作った Web アプリをすべてここから開けます。</p>
+</section>
+
+<div class="ctrl">
+  <input id="search" class="search" type="search" placeholder="アプリを検索…" aria-label="検索" />
+  <div class="filters" id="filters" role="tablist"></div>
+</div>
+
+<main class="grid-wrap">
+  <div class="grid" id="grid" role="list"></div>
+</main>
+
+<footer>
+  <p class="ft-l">AMU LOG — evoli's app portal</p>
+  <div style="display:flex; align-items:center; gap:1rem;">
+    <button id="reset-apps-btn" style="background:none; border:none; color:var(--text-3); font-size:.75rem; cursor:pointer; text-decoration:underline;" title="編集内容をリセットして初期状態に戻します">🔄 初期アプリリストに戻す</button>
+    <p class="ft-r" id="ft-date"></p>
+  </div>
+</footer>
+
+<!-- Hidden file input for logo upload -->
+<input type="file" id="logo-file-input" accept="image/*" style="display:none" />
+
+<script>
+/* ═══════════════════════════════════════════════════
+   LINK PRESETS — label / icon / url template
+   ═══════════════════════════════════════════════════ */
+const LINK_ICONS = {
+  local:     "💻",
+  vercel:    "▲",
+  github:    "🐙",
+  "gh-pages":"📄",
+  netlify:   "🟢",
+  youtube:   "▶️",
+  demo:      "🌐",
+  other:     "🔗",
+};
+
+/* ═══════════════════════════════════════════════════
+   APP DATA
+   links: [{label, url}]  — label is used to pick icon
+   logo:  absolute path to image (optional)
+   ═══════════════════════════════════════════════════ */
+const DEFAULT_APPS = [
+  // ── 音楽・サウンド ────────────────────────────────────
+  { id:"pixel-face",      name:"Pixel Face",                icon:"👾",
+    desc:"声・音声に反応してピクセルアートの顔がリアルタイムでアニメーション。",
+    tags:["音楽","AI","ビジュアル"], category:"音楽",
+    logo: "file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/pixel-face-app/public/inu_robot.png",
+    links:[
+      {label:"gh-pages", url:"https://amfmu49-spec.github.io/pixel-face-app/"},
+      {label:"local",    url:"file:///C:/Users/evoli/Downloads/Pixel-Face-本命API版.html"},
+      {label:"github",   url:"https://github.com/amfmu49-spec/pixel-face-app"},
+    ]},
+  { id:"amuvi",           name:"AMUvie",                    icon:"🎬",
+    desc:"歌詞モーションビデオを作成・エクスポートできる動画制作ツール。",
+    tags:["音楽","動画","クリエイティブ"], category:"音楽", logo:"",
+    links:[
+      {label:"local",  url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amuvi/dist/index.html"},
+      {label:"github", url:"https://github.com/amfmu49-spec/lyric-motion-app"},
+    ]},
+  { id:"sunoplayer",      name:"Suno Player",               icon:"🎵",
+    desc:"Suno AI で生成した楽曲をプレイリスト形式で再生できるプレーヤー。",
+    tags:["音楽","Suno","プレーヤー"], category:"音楽", logo:"",
+    links:[
+      {label:"vercel", url:"https://amu-p.vercel.app"},
+      {label:"local",  url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/sunoplayer/dist/index.html"},
+      {label:"github", url:"https://github.com/amfmu49-spec/AmuP"},
+    ]},
+  { id:"karaoke-app",     name:"カラオケアプリ",             icon:"🎤",
+    desc:"LRC 歌詞ファイルと音楽ファイルを使ってブラウザ上でカラオケ体験。",
+    tags:["音楽","カラオケ","LRC"], category:"音楽", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/karaoke-app/src/index.html"},
+    ]},
+  { id:"gemini-lyria",    name:"Gemini Lyria Music Studio", icon:"🎼",
+    desc:"Gemini Lyria API を使って AI が音楽をリアルタイム生成するスタジオ。",
+    tags:["音楽","AI","Gemini"], category:"音楽", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/gemini-lyria-music-studio/index.html"},
+    ]},
+  { id:"suno-chord",      name:"Suno Chord Player",         icon:"🎹",
+    desc:"コード進行を入力して Suno AI 向けの音楽スタイルを生成・再生。",
+    tags:["音楽","Suno","コード"], category:"音楽",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/suno-chord-player/assets/icon.png",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/suno-chord-player/index.html"},
+    ]},
+  { id:"lyric-motion",    name:"Lyric Motion",              icon:"✨",
+    desc:"歌詞をタイムラインに乗せてアニメーションさせ、動画としてエクスポートできるツール。",
+    tags:["音楽","アニメーション","動画"], category:"音楽", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/lyric_motion/index.html"},
+    ]},
+  { id:"ar-air-seq",      name:"AR Air Sequencer",          icon:"🌀",
+    desc:"カメラを使った AR 空間で空中をタップして音を鳴らせるシーケンサー。",
+    tags:["音楽","AR","カメラ"], category:"音楽", logo:"",
+    links:[
+      {label:"vercel", url:"https://ar-air-sequencer.vercel.app"},
+      {label:"local",  url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/ar-air-sequencer/index.html"},
+      {label:"github", url:"https://github.com/amfmu49-spec/airsynth-ar-seq"},
+    ]},
+
+  // ── ゲーム ────────────────────────────────────────────
+  { id:"amu-tune",        name:"Amu Tune Rhythm Game",      icon:"🥁",
+    desc:"音楽に合わせてノーツを叩くリズムゲーム。独自チャート作成機能付き。",
+    tags:["ゲーム","リズム","音楽"], category:"ゲーム", logo:"",
+    links:[
+      {label:"gh-pages", url:"https://amfmu49-spec.github.io/amu-tune-rhythm-game/"},
+      {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amu-tune-rhythm-game/index.html"},
+      {label:"github",   url:"https://github.com/amfmu49-spec/amu-tune-rhythm-game"},
+    ]},
+  { id:"freethrow",       name:"Amu Free Throw",            icon:"🏀",
+    desc:"フリースロー（バスケットボール）シミュレーターゲーム。",
+    tags:["ゲーム","スポーツ"], category:"ゲーム", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amu-freethrow/index.html"},
+    ]},
+  { id:"struckout",       name:"Amu Struck Out",            icon:"⚾",
+    desc:"野球の三振を体験できるピッチング / バッティングゲーム。",
+    tags:["ゲーム","スポーツ"], category:"ゲーム", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amu-struckout/index.html"},
+    ]},
+  { id:"fraction-rpg",    name:"Fraction RPG",              icon:"⚔️",
+    desc:"分数の計算を戦闘に組み込んだ教育 RPG ゲーム。",
+    tags:["ゲーム","RPG","教育"], category:"ゲーム", logo:"",
+    links:[
+      {label:"local",  url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/fraction-rpg/index.html"},
+      {label:"github", url:"https://github.com/amfmu49-spec/kazumon"},
+    ]},
+  { id:"darts",           name:"iPad Virtual Darts",        icon:"🎯",
+    desc:"タブレットで遊べるバーチャルダーツゲーム。タップで精度を競う。",
+    tags:["ゲーム","スポーツ","タブレット"], category:"ゲーム",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/ipad-virtual-darts/darts-board.png",
+    links:[
+      {label:"gh-pages", url:"https://amfmu49-spec.github.io/ipad-virtual-darts/"},
+      {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/ipad-virtual-darts/index.html"},
+      {label:"github",   url:"https://github.com/amfmu49-spec/ipad-virtual-darts"},
+    ]},
+  { id:"kaiji-numa",      name:"カイジ沼",                  icon:"🎰",
+    desc:"カイジ風のパチスロ沼シミュレーター。スロットの演出を完全再現。",
+    tags:["ゲーム","スロット","カイジ"], category:"ゲーム", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/kaiji-numa/index.html"},
+    ]},
+  { id:"medal-game",      name:"メダルゲーム",              icon:"🪙",
+    desc:"プッシャー式のメダルゲームをブラウザで再現。コインをプッシュして稼ぐ。",
+    tags:["ゲーム","アーケード"], category:"ゲーム", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/medal-game/index.html"},
+    ]},
+  { id:"smash-mobile",    name:"Smash Mobile",              icon:"💥",
+    desc:"スマッシュブラザーズ風の対戦格闘ゲーム。モバイル向け操作に最適化。",
+    tags:["ゲーム","格闘","モバイル"], category:"ゲーム",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/smash-mobile/assets/icon.png",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/smash-mobile/index.html"},
+    ]},
+  { id:"amulish-game",    name:"Amulish Game",              icon:"🌊",
+    desc:"amu キャラクターが登場するブラウザアクションゲーム。",
+    tags:["ゲーム","アクション"], category:"ゲーム", logo:"",
+    links:[
+      {label:"gh-pages", url:"https://amfmu49-spec.github.io/amulish-game/"},
+      {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amulish-game/index.html"},
+      {label:"github",   url:"https://github.com/amfmu49-spec/amulish-game"},
+    ]},
+  { id:"city-builder",    name:"Miniature City Builder",    icon:"🏙️",
+    desc:"Unity で作ったミニチュア都市のプレイアブルプロトタイプ。",
+    tags:["ゲーム","Unity","シミュレーション"], category:"ゲーム",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/MiniatureCityBuilder/Assets/Textures/MenuBackground.jpg",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/MiniatureCityBuilder/PlayablePrototype.html"},
+    ]},
+  { id:"ambient-marbles", name:"Ambient Marbles",           icon:"🔮",
+    desc:"ビー玉が転がり音を出すアンビエント系インタラクティブ体験。",
+    tags:["ゲーム","音楽","アンビエント"], category:"ゲーム", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/ambient-marbles/index.html"},
+    ]},
+  { id:"kanmon",          name:"漢モン",                    icon:"🀄",
+    desc:"漢字をモンスターにしたコレクション＆バトルゲーム。ガチャ・バトル搭載。",
+    tags:["ゲーム","教育","漢字"], category:"ゲーム",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/kanmon/assets/images/kanmon_logo.png",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/kanmon/index.html"},
+    ]},
+
+  // ── ユーティリティ ────────────────────────────────────
+  { id:"discord-bot",     name:"Discord スケジュールBot",   icon:"🤖",
+    desc:"Google カレンダーと連携して Discord にスケジュールを通知する Bot。",
+    tags:["ユーティリティ","Discord","カレンダー"], category:"ユーティリティ", logo:"",
+    links:[
+      {label:"github", url:"https://github.com/amfmu49-spec/discord_schedule_bot"},
+      {label:"local",  url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/discord_schedule_bot/index.js"},
+    ]},
+  { id:"shift-system",    name:"シフト自動作成システム",     icon:"📅",
+    desc:"紅生園向けのシフトスケジュールを自動で組み立てる Web ツール。",
+    tags:["ユーティリティ","シフト","業務"], category:"ユーティリティ", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/Downloads/紅生園シフト自動作成システム/index.html"},
+    ]},
+  { id:"line-stamp",      name:"LINE スタンプメーカー",      icon:"😄",
+    desc:"LINE スタンプ用の画像を作成・整形してエクスポートできるツール。",
+    tags:["ユーティリティ","LINE","画像"], category:"ユーティリティ", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/line-stamp-maker/index.html"},
+    ]},
+  { id:"layerdivider",    name:"Layer Divider",             icon:"🖼️",
+    desc:"画像をレイヤーに分割してエクスポートするユーティリティツール。",
+    tags:["ユーティリティ","画像","デザイン"], category:"ユーティリティ", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/layerdivider/index.html"},
+    ]},
+  { id:"see-through",     name:"See Through",               icon:"👁️",
+    desc:"カメラ映像をリアルタイム加工して透明感のある表示をするアプリ。",
+    tags:["ユーティリティ","カメラ","AR"], category:"ユーティリティ", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/see-through/index.html"},
+    ]},
+  { id:"suno-lrc",        name:"Suno LRC Bookmarklet",      icon:"🔖",
+    desc:"Suno のページから LRC 形式の歌詞を一発取得するブックマークレット。",
+    tags:["ユーティリティ","Suno","LRC"], category:"ユーティリティ", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/suno-lrc-bookmarklet/index.html"},
+    ]},
+  { id:"suno-lyric-dl",   name:"Suno 歌詞ダウンローダー",   icon:"📝",
+    desc:"Suno の URL を入力して歌詞とスタイル情報をまとめてダウンロードできるツール。",
+    tags:["ユーティリティ","Suno","歌詞"], category:"ユーティリティ", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/get-suno-lyric/index.html"},
+    ]},
+  { id:"sound-blind",     name:"Sound Blind",               icon:"🔇",
+    desc:"音を使ったバリアフリー体験アプリ。視覚に頼らず音だけで操作する。",
+    tags:["ユーティリティ","アクセシビリティ","音楽"], category:"ユーティリティ",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/sound-blind/icons/icon-512x512.png",
+    links:[
+      {label:"gh-pages", url:"https://amfmu49-spec.github.io/sound-blind/"},
+      {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/sound-blind/index.html"},
+      {label:"github",   url:"https://github.com/amfmu49-spec/sound-blind"},
+    ]},
+  { id:"stream-deck",     name:"Stream Deck Controller",    icon:"🎛️",
+    desc:"ブラウザを Stream Deck として使い、PC の操作をボタン一発で実行するコントローラー。",
+    tags:["ユーティリティ","配信","コントロール"], category:"ユーティリティ", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/stream-deck-pc-controller/index.html"},
+    ]},
+  { id:"twitter-card",    name:"Twitter Player Card App",   icon:"🐦",
+    desc:"Twitter/X の Player Card を使って音楽や動画を埋め込み再生できるツール。",
+    tags:["ユーティリティ","SNS","動画"], category:"ユーティリティ", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/twitter-player-card-app/index.html"},
+    ]},
+
+  // ── VTuber・AI ────────────────────────────────────────
+  { id:"vtuber-app",      name:"VTuber App",                icon:"🧊",
+    desc:"ライブ配信向けの VTuber アバターをブラウザで動かすアプリ。",
+    tags:["VTuber","AI","ライブ"], category:"VTuber / AI",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/vtuber-app/assets/icon.png",
+    links:[
+      {label:"gh-pages", url:"https://amfmu49-spec.github.io/instant-vtuber/"},
+      {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/vtuber-app/index.html"},
+      {label:"github",   url:"https://github.com/amfmu49-spec/instant-vtuber"},
+    ]},
+  { id:"lipsync",         name:"Lipsync App",               icon:"💬",
+    desc:"音声に合わせてキャラクターの口を動かすリップシンクアプリ。",
+    tags:["VTuber","AI","音声"], category:"VTuber / AI", logo:"",
+    links:[
+      {label:"gh-pages", url:"https://amfmu49-spec.github.io/lipsync-app/"},
+      {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/lipsync-app/index.html"},
+      {label:"github",   url:"https://github.com/amfmu49-spec/lipsync-app"},
+    ]},
+  { id:"robodog",         name:"RoboDog App",               icon:"🐕",
+    desc:"Web カメラの映像を使って犬型ロボットをリモートコントロールするアプリ。",
+    tags:["AI","ロボット","カメラ"], category:"VTuber / AI",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/robodog-app/assets/inu_robot_black_eyes.png",
+    links:[
+      {label:"gh-pages", url:"https://amfmu49-spec.github.io/robodog-app/"},
+      {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/robodog-app/index.html"},
+      {label:"github",   url:"https://github.com/amfmu49-spec/robodog-app"},
+    ]},
+  { id:"amulish",         name:"Amulish",                   icon:"🌸",
+    desc:"amu キャラクターのインタラクティブな展示・ファンサイト。",
+    tags:["VTuber","クリエイティブ"], category:"VTuber / AI",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amulish/public/amu_icon.png",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amulish/index.html"},
+    ]},
+  { id:"amuris",          name:"Amuris",                    icon:"💫",
+    desc:"amu キャラクターのビジュアルノベル・インタラクティブストーリー。",
+    tags:["VTuber","ストーリー"], category:"VTuber / AI", logo:"",
+    links:[
+      {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amuris/index.html"},
+    ]},
+  { id:"band-website",    name:"Band Website",              icon:"🎸",
+    desc:"バンドの公式サイト風ポートフォリオページ。楽曲・メンバー情報を掲載。",
+    tags:["クリエイティブ","音楽","Web"], category:"VTuber / AI",
+    logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/band-website/assets/img/logo.png",
+    links:[
+      {label:"gh-pages", url:"https://amfmu49-spec.github.io/band-website/"},
+      {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/band-website/index.html"},
+      {label:"github",   url:"https://github.com/amfmu49-spec/band-website"},
+    ]},
+];
+
+/* ═══════════════════════════════════════════════════
+   STATE  (LocalStorage-backed)
+   ═══════════════════════════════════════════════════ */
+const LS_KEY = "amu-log-apps-v5";
+let apps = [];
+function loadApps() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_KEY));
+    if (saved && Array.isArray(saved)) {
+      apps = saved;
+    } else {
+      apps = DEFAULT_APPS.map(a => ({...a}));
+    }
+  } catch(e) { apps = DEFAULT_APPS.map(a => ({...a})); }
+}
+function saveApps() {
+  localStorage.setItem(LS_KEY, JSON.stringify(apps));
+}
+loadApps();
+
+/* ═══════════════════════════════════════════════════
+   EDIT MODE
+   ═══════════════════════════════════════════════════ */
+let editMode = false;
+const editToggle = document.getElementById("edit-toggle");
+editToggle.addEventListener("click", () => {
+  editMode = !editMode;
+  document.body.classList.toggle("editing", editMode);
+  editToggle.classList.toggle("active", editMode);
+  editToggle.textContent = editMode ? "✅ 編集中" : "✏️ 編集";
+  if (!editMode) closeAllEditors();
+});
+
+function closeAllEditors() {
+  document.querySelectorAll(".card.edit-mode").forEach(c => {
+    const ef = c.querySelector(".edit-form");
+    if (ef) ef.remove();
+    c.classList.remove("edit-mode");
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   FILTERS & SEARCH
+   ═══════════════════════════════════════════════════ */
+const ALL_CATS = ["すべて", ...new Set(DEFAULT_APPS.map(a => a.category))];
+let activeCat = "すべて";
+let searchQ = "";
+
+const filtersEl = document.getElementById("filters");
+ALL_CATS.forEach(cat => {
+  const btn = document.createElement("button");
+  btn.className = "fbtn" + (cat === "すべて" ? " active" : "");
+  btn.textContent = cat; btn.dataset.cat = cat; btn.setAttribute("role","tab");
+  btn.addEventListener("click", () => {
+    activeCat = cat;
+    filtersEl.querySelectorAll(".fbtn").forEach(b => b.classList.toggle("active", b.dataset.cat === cat));
+    render();
+  });
+  filtersEl.appendChild(btn);
+});
+
+document.getElementById("search").addEventListener("input", e => {
+  searchQ = e.target.value.trim().toLowerCase();
+  render();
+});
+
+/* ═══════════════════════════════════════════════════
+   LOGO UPLOAD
+   ═══════════════════════════════════════════════════ */
+let logoTargetId = null;
+const logoInput = document.getElementById("logo-file-input");
+logoInput.addEventListener("change", () => {
+  const file = logoInput.files[0];
+  if (!file || !logoTargetId) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const app = apps.find(a => a.id === logoTargetId);
+    if (app) { app.logo = e.target.result; saveApps(); render(); }
+  };
+  reader.readAsDataURL(file);
+  logoInput.value = "";
+});
+
+/* ═══════════════════════════════════════════════════
+   RENDER
+   ═══════════════════════════════════════════════════ */
+function render() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  const filtered = apps.filter(a => {
+    const cm = activeCat === "すべて" || a.category === activeCat;
+    const tm = !searchQ || a.name.toLowerCase().includes(searchQ) ||
+               a.desc.toLowerCase().includes(searchQ) ||
+               a.tags.some(t => t.toLowerCase().includes(searchQ));
+    return cm && tm;
+  });
+
+  document.getElementById("app-count").textContent = filtered.length + " apps";
+
+  if (!filtered.length) {
+    const emp = document.createElement("div");
+    emp.className = "empty"; emp.textContent = "該当するアプリがありません 🔍";
+    grid.appendChild(emp); return;
+  }
+
+  const showDiv = activeCat === "すべて" && !searchQ;
+  const groups = {};
+  filtered.forEach(a => { (groups[a.category] = groups[a.category] || []).push(a); });
+
+  Object.entries(groups).forEach(([cat, list], gi) => {
+    if (showDiv) {
+      const sl = document.createElement("div");
+      sl.className = "sec-label"; sl.textContent = cat;
+      if (gi > 0) sl.style.marginTop = "1.25rem";
+      grid.appendChild(sl);
+    }
+    list.forEach(app => grid.appendChild(buildCard(app)));
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD BUILDER
+   ═══════════════════════════════════════════════════ */
+function linkIcon(label) {
+  return LINK_ICONS[label] || LINK_ICONS.other;
+}
+function linkLabel(label) {
+  const MAP = {local:"ローカル", vercel:"Vercel", github:"GitHub", "gh-pages":"GitHub Pages",
+    netlify:"Netlify", youtube:"YouTube", demo:"デモ"};
+  return MAP[label] || label;
+}
+
+function buildCard(app) {
+  const card = document.createElement("div");
+  card.className = "card"; card.id = "card-" + app.id;
+  card.setAttribute("role","listitem");
+
+  // Logo area
+  const logoArea = document.createElement("div");
+  logoArea.className = "card-logo";
+
+  if (app.logo) {
+    const img = document.createElement("img");
+    img.src = app.logo; img.alt = app.name + " logo";
+    img.onerror = () => { img.remove(); logoArea.innerHTML = '<span class="logo-emoji">' + app.icon + '</span>'; };
+    logoArea.appendChild(img);
+  } else {
+    logoArea.innerHTML = '<span class="logo-emoji">' + app.icon + '</span>';
+  }
+
+  // Upload overlay (edit mode)
+  const uploadOverlay = document.createElement("div");
+  uploadOverlay.className = "card-logo-upload";
+  uploadOverlay.innerHTML = '<span class="card-logo-upload-icon">📷</span><span>ロゴを変更</span>';
+  uploadOverlay.addEventListener("click", e => {
+    e.preventDefault(); logoTargetId = app.id; logoInput.click();
+  });
+  logoArea.appendChild(uploadOverlay);
+  card.appendChild(logoArea);
+
+  // Body
+  const body = document.createElement("div");
+  body.className = "card-body";
+
+  const head = document.createElement("div"); head.className = "card-head";
+  const iconSm = document.createElement("div"); iconSm.className = "card-icon-sm"; iconSm.textContent = app.icon;
+  const title = document.createElement("div"); title.className = "card-title"; title.textContent = app.name;
+  head.appendChild(iconSm); head.appendChild(title);
+
+  const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = app.desc;
+
+  const tagsEl = document.createElement("div"); tagsEl.className = "card-tags";
+  app.tags.forEach((t,i) => {
+    const tag = document.createElement("span"); tag.className = "tag" + (i===0?" hi":""); tag.textContent = t;
+    tagsEl.appendChild(tag);
+  });
+
+  // Links
+  const linksEl = document.createElement("div"); linksEl.className = "card-links";
+  (app.links || []).forEach((lk, i) => {
+    const a = document.createElement("a"); a.className = "card-link" + (i===0?" primary":"");
+    a.href = lk.url; a.target = "_blank"; a.rel = "noopener";
+    a.innerHTML = '<span class="card-link-icon">' + linkIcon(lk.label) + '</span>' + linkLabel(lk.label);
+    linksEl.appendChild(a);
+  });
+
+  body.appendChild(head);
+  body.appendChild(desc);
+  body.appendChild(tagsEl);
+  body.appendChild(linksEl);
+  card.appendChild(body);
+
+  // Controls (Edit & Delete)
+  const ctrls = document.createElement("div"); ctrls.className = "card-ctrls";
+
+  const editBtn = document.createElement("button");
+  editBtn.className = "card-btn btn-edit"; editBtn.title = "編集"; editBtn.textContent = "✏️";
+  editBtn.addEventListener("click", e => { e.stopPropagation(); openEditor(card, app); });
+
+  const delBtn = document.createElement("button");
+  delBtn.className = "card-btn btn-del"; delBtn.title = "削除"; delBtn.textContent = "🗑️";
+  delBtn.addEventListener("click", e => { e.stopPropagation(); deleteApp(app); });
+
+  ctrls.appendChild(editBtn); ctrls.appendChild(delBtn);
+  card.appendChild(ctrls);
+
+  return card;
+}
+
+let toastTimer = null;
+function showToast(msg, undoCallback) {
+  const existing = document.querySelector(".toast");
+  if (existing) existing.remove();
+  if (toastTimer) clearTimeout(toastTimer);
+
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerHTML = `<span>${msg}</span>`;
+
+  if (undoCallback) {
+    const btn = document.createElement("button");
+    btn.className = "toast-undo";
+    btn.textContent = "元に戻す";
+    btn.addEventListener("click", () => {
+      t.remove();
+      undoCallback();
+    });
+    t.appendChild(btn);
+  }
+
+  document.body.appendChild(t);
+  toastTimer = setTimeout(() => { if (t.parentNode) t.remove(); }, 4000);
+}
+
+function deleteApp(app) {
+  const deletedIndex = apps.findIndex(a => a.id === app.id);
+  if (deletedIndex === -1) return;
+
+  apps = apps.filter(a => a.id !== app.id);
+  saveApps();
+  render();
+
+  showToast(`🗑️ 「${app.name}」を削除しました`, () => {
+    apps.splice(deletedIndex, 0, app);
+    saveApps();
+    render();
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   INLINE EDITOR
+   ═══════════════════════════════════════════════════ */
+function openEditor(card, app) {
+  if (card.classList.contains("edit-mode")) return;
+  card.classList.add("edit-mode");
+
+  const ef = document.createElement("div"); ef.className = "edit-form";
+
+  // Name
+  ef.appendChild(makeRow("アプリ名", mkInput("text", app.name, "ef-name-" + app.id)));
+  // Icon
+  ef.appendChild(makeRow("アイコン（絵文字）", mkInput("text", app.icon, "ef-icon-" + app.id)));
+  // Desc
+  const taEl = document.createElement("textarea"); taEl.className = "ef-textarea";
+  taEl.id = "ef-desc-" + app.id; taEl.value = app.desc; taEl.rows = 3;
+  ef.appendChild(makeRow("説明", taEl));
+  // Tags
+  ef.appendChild(makeRow("タグ（カンマ区切り）", mkInput("text", app.tags.join(", "), "ef-tags-" + app.id)));
+  // Logo URL
+  const logoRow = makeRow("ロゴ画像 URL / パス", mkInput("text", app.logo || "", "ef-logo-" + app.id));
+  const logoHint = document.createElement("div"); logoHint.className = "ef-sub-label";
+  logoHint.textContent = "上の画像エリアから直接アップロードも可能";
+  logoRow.appendChild(logoHint);
+  ef.appendChild(logoRow);
+  // Category
+  ef.appendChild(makeRow("カテゴリ", mkInput("text", app.category, "ef-cat-" + app.id)));
+
+  // Links
+  const linksSection = document.createElement("div"); linksSection.className = "ef-row";
+  const linksLabel = document.createElement("div"); linksLabel.className = "ef-label"; linksLabel.textContent = "関連リンク";
+  linksSection.appendChild(linksLabel);
+
+  const linksContainer = document.createElement("div"); linksContainer.className = "ef-links";
+  (app.links || []).forEach(lk => linksContainer.appendChild(makeLinkRow(lk.label, lk.url)));
+
+  const addLinkBtn = document.createElement("button"); addLinkBtn.type = "button";
+  addLinkBtn.className = "ef-add-link"; addLinkBtn.textContent = "+ リンクを追加";
+  addLinkBtn.addEventListener("click", () => linksContainer.insertBefore(makeLinkRow("demo",""), addLinkBtn));
+
+  linksSection.appendChild(linksContainer);
+  linksContainer.appendChild(addLinkBtn);
+  ef.appendChild(linksSection);
+
+  // Actions
+  const actions = document.createElement("div"); actions.className = "ef-actions";
+  const saveBtn = document.createElement("button"); saveBtn.type = "button"; saveBtn.className = "ef-save"; saveBtn.textContent = "保存";
+  const cancelBtn = document.createElement("button"); cancelBtn.type = "button"; cancelBtn.className = "ef-cancel"; cancelBtn.textContent = "キャンセル";
+  const deleteBtn = document.createElement("button"); deleteBtn.type = "button"; deleteBtn.className = "ef-delete"; deleteBtn.textContent = "🗑️ 削除";
+
+  saveBtn.addEventListener("click", () => {
+    const name  = ef.querySelector("#ef-name-" + app.id).value.trim();
+    const icon  = ef.querySelector("#ef-icon-" + app.id).value.trim();
+    const desc  = ef.querySelector("#ef-desc-" + app.id).value.trim();
+    const tags  = ef.querySelector("#ef-tags-" + app.id).value.split(",").map(t=>t.trim()).filter(Boolean);
+    const logo  = ef.querySelector("#ef-logo-" + app.id).value.trim();
+    const cat   = ef.querySelector("#ef-cat-" + app.id).value.trim();
+    const linkRows = linksContainer.querySelectorAll(".ef-link-row");
+    const links = [];
+    linkRows.forEach(row => {
+      const label = row.querySelector(".ef-link-label").value.trim();
+      const url   = row.querySelector(".ef-link-url").value.trim();
+      if (url) links.push({label, url});
+    });
+    Object.assign(app, {name, icon, desc, tags, logo, category: cat, links});
+    saveApps(); render();
+  });
+  cancelBtn.addEventListener("click", () => {
+    card.classList.remove("edit-mode"); ef.remove();
+  });
+  deleteBtn.addEventListener("click", () => deleteApp(app));
+
+  actions.appendChild(saveBtn); actions.appendChild(cancelBtn); actions.appendChild(deleteBtn);
+  ef.appendChild(actions);
+  card.appendChild(ef);
+}
+
+function makeRow(labelText, inputEl) {
+  const row = document.createElement("div"); row.className = "ef-row";
+  const lbl = document.createElement("div"); lbl.className = "ef-label"; lbl.textContent = labelText;
+  row.appendChild(lbl); row.appendChild(inputEl);
+  return row;
+}
+function mkInput(type, value, id) {
+  const inp = document.createElement("input"); inp.type = type;
+  inp.className = "ef-input"; inp.value = value; inp.id = id;
+  return inp;
+}
+function makeLinkRow(label, url) {
+  const row = document.createElement("div"); row.className = "ef-link-row";
+  const labelIn = document.createElement("input"); labelIn.type = "text";
+  labelIn.className = "ef-input ef-link-label"; labelIn.value = label;
+  labelIn.placeholder = "local / vercel / github / gh-pages …"; labelIn.style.maxWidth = "130px";
+  const urlIn = document.createElement("input"); urlIn.type = "url";
+  urlIn.className = "ef-input ef-link-url"; urlIn.value = url; urlIn.placeholder = "https://…";
+  const del = document.createElement("button"); del.type = "button";
+  del.className = "ef-link-del"; del.textContent = "✕"; del.title = "削除";
+  del.addEventListener("click", () => row.remove());
+  row.appendChild(labelIn); row.appendChild(urlIn); row.appendChild(del);
+  return row;
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════ */
+render();
+document.getElementById("ft-date").textContent =
+  "最終更新: " + new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric"});
+
+document.getElementById("reset-apps-btn").addEventListener("click", () => {
+  if (confirm("全編集・削除内容をクリアし、初期のアプリリストに戻しますか？")) {
+    localStorage.removeItem(LS_KEY);
+    apps = DEFAULT_APPS.map(a => ({...a}));
+    render();
+  }
+});
+</script>
+</body>
+</html>
