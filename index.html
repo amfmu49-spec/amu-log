@@ -392,7 +392,7 @@ const LINK_ICONS = {
    ═══════════════════════════════════════════════════ */
 const DEFAULT_APPS = [
   // ── 音楽・サウンド ────────────────────────────────────
-  { id:"pixel-face",      name:"Pixel Face",                icon:"👾",
+  { id:"pixel-face",      name:"Pixel Face",                version:"v1.0.0",  icon:"👾",
     desc:"声・音声に反応してピクセルアートの顔がリアルタイムでアニメーション。",
     tags:["音楽","AI","ビジュアル"], category:"音楽",
     logo: "file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/pixel-face-app/public/inu_robot.png",
@@ -401,14 +401,14 @@ const DEFAULT_APPS = [
       {label:"local",    url:"file:///C:/Users/evoli/Downloads/Pixel-Face-本命API版.html"},
       {label:"github",   url:"https://github.com/amfmu49-spec/pixel-face-app"},
     ]},
-  { id:"amuvi",           name:"AMUvie",                    icon:"🎬",
+  { id:"amuvi",           name:"AMUvie",                    version:"v2.7.3",  icon:"🎬",
     desc:"歌詞モーションビデオを作成・エクスポートできる動画制作ツール。",
     tags:["音楽","動画","クリエイティブ"], category:"音楽", logo:"",
     links:[
       {label:"local",  url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amuvi/dist/index.html"},
       {label:"github", url:"https://github.com/amfmu49-spec/lyric-motion-app"},
     ]},
-  { id:"sunoplayer",      name:"Suno Player",               icon:"🎵",
+  { id:"sunoplayer",      name:"Suno Player",               version:"v1.2.0",  icon:"🎵",
     desc:"Suno AI で生成した楽曲をプレイリスト形式で再生できるプレーヤー。",
     tags:["音楽","Suno","プレーヤー"], category:"音楽", logo:"",
     links:[
@@ -416,32 +416,32 @@ const DEFAULT_APPS = [
       {label:"local",  url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/sunoplayer/dist/index.html"},
       {label:"github", url:"https://github.com/amfmu49-spec/AmuP"},
     ]},
-  { id:"karaoke-app",     name:"カラオケアプリ",             icon:"🎤",
+  { id:"karaoke-app",     name:"カラオケアプリ",             version:"v0.1.0",  icon:"🎤",
     desc:"LRC 歌詞ファイルと音楽ファイルを使ってブラウザ上でカラオケ体験。",
     tags:["音楽","カラオケ","LRC"], category:"音楽", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/karaoke-app/src/index.html"},
     ]},
-  { id:"gemini-lyria",    name:"Gemini Lyria Music Studio", icon:"🎼",
+  { id:"gemini-lyria",    name:"Gemini Lyria Music Studio", version:"v1.0.0",  icon:"🎼",
     desc:"Gemini Lyria API を使って AI が音楽をリアルタイム生成するスタジオ。",
     tags:["音楽","AI","Gemini"], category:"音楽", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/gemini-lyria-music-studio/index.html"},
     ]},
-  { id:"suno-chord",      name:"Suno Chord Player",         icon:"🎹",
+  { id:"suno-chord",      name:"Suno Chord Player",         version:"v1.0.0",  icon:"🎹",
     desc:"コード進行を入力して Suno AI 向けの音楽スタイルを生成・再生。",
     tags:["音楽","Suno","コード"], category:"音楽",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/suno-chord-player/assets/icon.png",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/suno-chord-player/index.html"},
     ]},
-  { id:"lyric-motion",    name:"Lyric Motion",              icon:"✨",
+  { id:"lyric-motion",    name:"Lyric Motion",              version:"v2.4.0",  icon:"✨",
     desc:"歌詞をタイムラインに乗せてアニメーションさせ、動画としてエクスポートできるツール。",
     tags:["音楽","アニメーション","動画"], category:"音楽", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/lyric_motion/index.html"},
     ]},
-  { id:"ar-air-seq",      name:"AR Air Sequencer",          icon:"🌀",
+  { id:"ar-air-seq",      name:"AR Air Sequencer",          version:"v1.0.0",  icon:"🌀",
     desc:"カメラを使った AR 空間で空中をタップして音を鳴らせるシーケンサー。",
     tags:["音楽","AR","カメラ"], category:"音楽", logo:"",
     links:[
@@ -451,7 +451,7 @@ const DEFAULT_APPS = [
     ]},
 
   // ── ゲーム ────────────────────────────────────────────
-  { id:"amu-tune",        name:"Amu Tune Rhythm Game",      icon:"🥁",
+  { id:"amu-tune",        name:"Amu Tune Rhythm Game",      version:"v1.0.0",  icon:"🥁",
     desc:"音楽に合わせてノーツを叩くリズムゲーム。独自チャート作成機能付き。",
     tags:["ゲーム","リズム","音楽"], category:"ゲーム", logo:"",
     links:[
@@ -459,26 +459,26 @@ const DEFAULT_APPS = [
       {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amu-tune-rhythm-game/index.html"},
       {label:"github",   url:"https://github.com/amfmu49-spec/amu-tune-rhythm-game"},
     ]},
-  { id:"freethrow",       name:"Amu Free Throw",            icon:"🏀",
+  { id:"freethrow",       name:"Amu Free Throw",            version:"v1.0.0",  icon:"🏀",
     desc:"フリースロー（バスケットボール）シミュレーターゲーム。",
     tags:["ゲーム","スポーツ"], category:"ゲーム", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amu-freethrow/index.html"},
     ]},
-  { id:"struckout",       name:"Amu Struck Out",            icon:"⚾",
+  { id:"struckout",       name:"Amu Struck Out",            version:"v1.0.0",  icon:"⚾",
     desc:"野球の三振を体験できるピッチング / バッティングゲーム。",
     tags:["ゲーム","スポーツ"], category:"ゲーム", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amu-struckout/index.html"},
     ]},
-  { id:"fraction-rpg",    name:"Fraction RPG",              icon:"⚔️",
+  { id:"fraction-rpg",    name:"Fraction RPG",              version:"v1.0.0",  icon:"⚔️",
     desc:"分数の計算を戦闘に組み込んだ教育 RPG ゲーム。",
     tags:["ゲーム","RPG","教育"], category:"ゲーム", logo:"",
     links:[
       {label:"local",  url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/fraction-rpg/index.html"},
       {label:"github", url:"https://github.com/amfmu49-spec/kazumon"},
     ]},
-  { id:"darts",           name:"iPad Virtual Darts",        icon:"🎯",
+  { id:"darts",           name:"iPad Virtual Darts",        version:"v1.0.0",  icon:"🎯",
     desc:"タブレットで遊べるバーチャルダーツゲーム。タップで精度を競う。",
     tags:["ゲーム","スポーツ","タブレット"], category:"ゲーム",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/ipad-virtual-darts/darts-board.png",
@@ -487,26 +487,26 @@ const DEFAULT_APPS = [
       {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/ipad-virtual-darts/index.html"},
       {label:"github",   url:"https://github.com/amfmu49-spec/ipad-virtual-darts"},
     ]},
-  { id:"kaiji-numa",      name:"カイジ沼",                  icon:"🎰",
+  { id:"kaiji-numa",      name:"カイジ沼",                  version:"v0.1.0",  icon:"🎰",
     desc:"カイジ風のパチスロ沼シミュレーター。スロットの演出を完全再現。",
     tags:["ゲーム","スロット","カイジ"], category:"ゲーム", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/kaiji-numa/index.html"},
     ]},
-  { id:"medal-game",      name:"メダルゲーム",              icon:"🪙",
+  { id:"medal-game",      name:"メダルゲーム",              version:"v0.1.0",  icon:"🪙",
     desc:"プッシャー式のメダルゲームをブラウザで再現。コインをプッシュして稼ぐ。",
     tags:["ゲーム","アーケード"], category:"ゲーム", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/medal-game/index.html"},
     ]},
-  { id:"smash-mobile",    name:"Smash Mobile",              icon:"💥",
+  { id:"smash-mobile",    name:"Smash Mobile",              version:"v1.0.0",  icon:"💥",
     desc:"スマッシュブラザーズ風の対戦格闘ゲーム。モバイル向け操作に最適化。",
     tags:["ゲーム","格闘","モバイル"], category:"ゲーム",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/smash-mobile/assets/icon.png",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/smash-mobile/index.html"},
     ]},
-  { id:"amulish-game",    name:"Amulish Game",              icon:"🌊",
+  { id:"amulish-game",    name:"Amulish Game",              version:"v1.0.0",  icon:"🌊",
     desc:"amu キャラクターが登場するブラウザアクションゲーム。",
     tags:["ゲーム","アクション"], category:"ゲーム", logo:"",
     links:[
@@ -514,20 +514,20 @@ const DEFAULT_APPS = [
       {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amulish-game/index.html"},
       {label:"github",   url:"https://github.com/amfmu49-spec/amulish-game"},
     ]},
-  { id:"city-builder",    name:"Miniature City Builder",    icon:"🏙️",
+  { id:"city-builder",    name:"Miniature City Builder",    version:"v0.8.0",  icon:"🏙️",
     desc:"Unity で作ったミニチュア都市のプレイアブルプロトタイプ。",
     tags:["ゲーム","Unity","シミュレーション"], category:"ゲーム",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/MiniatureCityBuilder/Assets/Textures/MenuBackground.jpg",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/MiniatureCityBuilder/PlayablePrototype.html"},
     ]},
-  { id:"ambient-marbles", name:"Ambient Marbles",           icon:"🔮",
+  { id:"ambient-marbles", name:"Ambient Marbles",           version:"v1.0.0",  icon:"🔮",
     desc:"ビー玉が転がり音を出すアンビエント系インタラクティブ体験。",
     tags:["ゲーム","音楽","アンビエント"], category:"ゲーム", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/ambient-marbles/index.html"},
     ]},
-  { id:"kanmon",          name:"漢モン",                    icon:"🀄",
+  { id:"kanmon",          name:"漢モン",                    version:"v1.2.0",  icon:"🀄",
     desc:"漢字をモンスターにしたコレクション＆バトルゲーム。ガチャ・バトル搭載。",
     tags:["ゲーム","教育","漢字"], category:"ゲーム",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/kanmon/assets/images/kanmon_logo.png",
@@ -536,50 +536,50 @@ const DEFAULT_APPS = [
     ]},
 
   // ── ユーティリティ ────────────────────────────────────
-  { id:"discord-bot",     name:"Discord スケジュールBot",   icon:"🤖",
+  { id:"discord-bot",     name:"Discord スケジュールBot",   version:"v1.2.0",  icon:"🤖",
     desc:"Google カレンダーと連携して Discord にスケジュールを通知する Bot。",
     tags:["ユーティリティ","Discord","カレンダー"], category:"ユーティリティ", logo:"",
     links:[
       {label:"github", url:"https://github.com/amfmu49-spec/discord_schedule_bot"},
       {label:"local",  url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/discord_schedule_bot/index.js"},
     ]},
-  { id:"shift-system",    name:"シフト自動作成システム",     icon:"📅",
+  { id:"shift-system",    name:"シフト自動作成システム",     version:"v1.3.0",  icon:"📅",
     desc:"紅生園向けのシフトスケジュールを自動で組み立てる Web ツール。",
     tags:["ユーティリティ","シフト","業務"], category:"ユーティリティ", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/Downloads/紅生園シフト自動作成システム/index.html"},
     ]},
-  { id:"line-stamp",      name:"LINE スタンプメーカー",      icon:"😄",
+  { id:"line-stamp",      name:"LINE スタンプメーカー",      version:"v1.0.0",  icon:"😄",
     desc:"LINE スタンプ用の画像を作成・整形してエクスポートできるツール。",
     tags:["ユーティリティ","LINE","画像"], category:"ユーティリティ", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/line-stamp-maker/index.html"},
     ]},
-  { id:"layerdivider",    name:"Layer Divider",             icon:"🖼️",
+  { id:"layerdivider",    name:"Layer Divider",             version:"v1.0.0",  icon:"🖼️",
     desc:"画像をレイヤーに分割してエクスポートするユーティリティツール。",
     tags:["ユーティリティ","画像","デザイン"], category:"ユーティリティ", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/layerdivider/index.html"},
     ]},
-  { id:"see-through",     name:"See Through",               icon:"👁️",
+  { id:"see-through",     name:"See Through",               version:"v1.0.0",  icon:"👁️",
     desc:"カメラ映像をリアルタイム加工して透明感のある表示をするアプリ。",
     tags:["ユーティリティ","カメラ","AR"], category:"ユーティリティ", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/see-through/index.html"},
     ]},
-  { id:"suno-lrc",        name:"Suno LRC Bookmarklet",      icon:"🔖",
+  { id:"suno-lrc",        name:"Suno LRC Bookmarklet",      version:"v1.0.0",  icon:"🔖",
     desc:"Suno のページから LRC 形式の歌詞を一発取得するブックマークレット。",
     tags:["ユーティリティ","Suno","LRC"], category:"ユーティリティ", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/suno-lrc-bookmarklet/index.html"},
     ]},
-  { id:"suno-lyric-dl",   name:"Suno 歌詞ダウンローダー",   icon:"📝",
+  { id:"suno-lyric-dl",   name:"Suno 歌詞ダウンローダー",   version:"v2.0.9",  icon:"📝",
     desc:"Suno の URL を入力して歌詞とスタイル情報をまとめてダウンロードできるツール。",
     tags:["ユーティリティ","Suno","歌詞"], category:"ユーティリティ", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/get-suno-lyric/index.html"},
     ]},
-  { id:"sound-blind",     name:"Sound Blind",               icon:"🔇",
+  { id:"sound-blind",     name:"Sound Blind",               version:"v0.1.0",  icon:"🔇",
     desc:"音を使ったバリアフリー体験アプリ。視覚に頼らず音だけで操作する。",
     tags:["ユーティリティ","アクセシビリティ","音楽"], category:"ユーティリティ",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/sound-blind/icons/icon-512x512.png",
@@ -588,13 +588,13 @@ const DEFAULT_APPS = [
       {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/sound-blind/index.html"},
       {label:"github",   url:"https://github.com/amfmu49-spec/sound-blind"},
     ]},
-  { id:"stream-deck",     name:"Stream Deck Controller",    icon:"🎛️",
+  { id:"stream-deck",     name:"Stream Deck Controller",    version:"v1.0.0",  icon:"🎛️",
     desc:"ブラウザを Stream Deck として使い、PC の操作をボタン一発で実行するコントローラー。",
     tags:["ユーティリティ","配信","コントロール"], category:"ユーティリティ", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/stream-deck-pc-controller/index.html"},
     ]},
-  { id:"twitter-card",    name:"Twitter Player Card App",   icon:"🐦",
+  { id:"twitter-card",    name:"Twitter Player Card App",   version:"v21.0.0", icon:"🐦",
     desc:"Twitter/X の Player Card を使って音楽や動画を埋め込み再生できるツール。",
     tags:["ユーティリティ","SNS","動画"], category:"ユーティリティ", logo:"",
     links:[
@@ -602,7 +602,7 @@ const DEFAULT_APPS = [
     ]},
 
   // ── VTuber・AI ────────────────────────────────────────
-  { id:"vtuber-app",      name:"VTuber App",                icon:"🧊",
+  { id:"vtuber-app",      name:"VTuber App",                version:"v1.5.0",  icon:"🧊",
     desc:"ライブ配信向けの VTuber アバターをブラウザで動かすアプリ。",
     tags:["VTuber","AI","ライブ"], category:"VTuber / AI",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/vtuber-app/assets/icon.png",
@@ -611,7 +611,7 @@ const DEFAULT_APPS = [
       {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/vtuber-app/index.html"},
       {label:"github",   url:"https://github.com/amfmu49-spec/instant-vtuber"},
     ]},
-  { id:"lipsync",         name:"Lipsync App",               icon:"💬",
+  { id:"lipsync",         name:"Lipsync App",               version:"v1.2.0",  icon:"💬",
     desc:"音声に合わせてキャラクターの口を動かすリップシンクアプリ。",
     tags:["VTuber","AI","音声"], category:"VTuber / AI", logo:"",
     links:[
@@ -619,7 +619,7 @@ const DEFAULT_APPS = [
       {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/lipsync-app/index.html"},
       {label:"github",   url:"https://github.com/amfmu49-spec/lipsync-app"},
     ]},
-  { id:"robodog",         name:"RoboDog App",               icon:"🐕",
+  { id:"robodog",         name:"RoboDog App",               version:"v1.1.0",  icon:"🐕",
     desc:"Web カメラの映像を使って犬型ロボットをリモートコントロールするアプリ。",
     tags:["AI","ロボット","カメラ"], category:"VTuber / AI",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/robodog-app/assets/inu_robot_black_eyes.png",
@@ -628,20 +628,20 @@ const DEFAULT_APPS = [
       {label:"local",    url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/robodog-app/index.html"},
       {label:"github",   url:"https://github.com/amfmu49-spec/robodog-app"},
     ]},
-  { id:"amulish",         name:"Amulish",                   icon:"🌸",
+  { id:"amulish",         name:"Amulish",                   version:"v1.0.0",  icon:"🌸",
     desc:"amu キャラクターのインタラクティブな展示・ファンサイト。",
     tags:["VTuber","クリエイティブ"], category:"VTuber / AI",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amulish/public/amu_icon.png",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amulish/index.html"},
     ]},
-  { id:"amuris",          name:"Amuris",                    icon:"💫",
+  { id:"amuris",          name:"Amuris",                    version:"v1.0.0",  icon:"💫",
     desc:"amu キャラクターのビジュアルノベル・インタラクティブストーリー。",
     tags:["VTuber","ストーリー"], category:"VTuber / AI", logo:"",
     links:[
       {label:"local", url:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/amuris/index.html"},
     ]},
-  { id:"band-website",    name:"Band Website",              icon:"🎸",
+  { id:"band-website",    name:"Band Website",              version:"v1.0.0",  icon:"🎸",
     desc:"バンドの公式サイト風ポートフォリオページ。楽曲・メンバー情報を掲載。",
     tags:["クリエイティブ","音楽","Web"], category:"VTuber / AI",
     logo:"file:///C:/Users/evoli/.gemini/antigravity-ide/scratch/band-website/assets/img/logo.png",
@@ -655,17 +655,17 @@ const DEFAULT_APPS = [
 /* ═══════════════════════════════════════════════════
    STATE  (LocalStorage-backed)
    ═══════════════════════════════════════════════════ */
-const LS_KEY = "amu-log-apps-v5";
+const LS_KEY = "amu-log-apps-v6";
 let apps = [];
 function loadApps() {
   try {
     const saved = JSON.parse(localStorage.getItem(LS_KEY));
     if (saved && Array.isArray(saved)) {
-      apps = saved.map(a => ({ version: "v1.0.0", ...a }));
+      apps = saved;
     } else {
-      apps = DEFAULT_APPS.map(a => ({ version: "v1.0.0", ...a }));
+      apps = DEFAULT_APPS.map(a => ({...a}));
     }
-  } catch(e) { apps = DEFAULT_APPS.map(a => ({ version: "v1.0.0", ...a })); }
+  } catch(e) { apps = DEFAULT_APPS.map(a => ({...a})); }
 }
 function saveApps() {
   localStorage.setItem(LS_KEY, JSON.stringify(apps));
