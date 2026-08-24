@@ -57,6 +57,18 @@
       user-select: none;
     }
     .brand-dot { width:7px; height:7px; border-radius:50%; background:#111; flex-shrink:0; }
+    .brand-ver {
+      font-size: .65rem; font-weight: 600; color: #0070f3;
+      background: rgba(0, 112, 243, 0.08); border: 1px solid rgba(0, 112, 243, 0.2);
+      padding: 1px 7px; border-radius: 99px; margin-left: 2px; margin-right: 2px;
+      line-height: 1.4; display: inline-block;
+    }
+    .card-ver {
+      font-size: .65rem; font-weight: 600; color: #0070f3;
+      background: rgba(0, 112, 243, 0.08); border: 1px solid rgba(0, 112, 243, 0.2);
+      padding: 1px 6px; border-radius: 99px; margin-left: 6px;
+      vertical-align: middle; display: inline-block; letter-spacing: 0.01em;
+    }
     .brand em { font-style:italic; font-weight:300; color: var(--text-2); margin-left:1px; }
     .hd-right { display:flex; align-items:center; gap:.6rem; }
     .pill {
@@ -323,7 +335,7 @@
 
 <header>
   <div class="hd">
-    <a href="#" class="brand"><span class="brand-dot"></span>AMU LOG<em> by evoli</em></a>
+    <a href="#" class="brand"><span class="brand-dot"></span>AMU LOG<span class="brand-ver">v1.2.0</span><em>by evoli</em></a>
     <div class="hd-right">
       <span class="pill" id="app-count">-- apps</span>
       <button id="add-app-btn" title="新しいアプリをリストに追加" style="font-family:inherit; font-size:.78rem; font-weight:600; padding:6px 14px; border-radius:var(--r-sm); background:#0070f3; color:#fff; border:none; cursor:pointer; transition:opacity 0.2s;">＋ 新規追加</button>
@@ -333,7 +345,7 @@
 </header>
 
 <section class="hero">
-  <p class="hero-label">evoli's workspace</p>
+  <p class="hero-label">evoli's workspace • Portal v1.2.0</p>
   <h1>作ってきた<br /><span>アプリ一覧</span></h1>
   <p class="hero-desc">音楽・ゲーム・ユーティリティ・AI など、これまで作った Web アプリをすべてここから開けます。</p>
 </section>
@@ -348,7 +360,7 @@
 </main>
 
 <footer>
-  <p class="ft-l">AMU LOG — evoli's app portal</p>
+  <p class="ft-l">AMU LOG <span class="card-ver" style="margin-left:0; margin-right:4px;">v1.2.0</span> — evoli's app portal</p>
   <div style="display:flex; align-items:center; gap:1rem;">
     <button id="reset-apps-btn" style="background:none; border:none; color:var(--text-3); font-size:.75rem; cursor:pointer; text-decoration:underline;" title="編集内容をリセットして初期状態に戻します">🔄 初期アプリリストに戻す</button>
     <p class="ft-r" id="ft-date"></p>
@@ -649,11 +661,11 @@ function loadApps() {
   try {
     const saved = JSON.parse(localStorage.getItem(LS_KEY));
     if (saved && Array.isArray(saved)) {
-      apps = saved;
+      apps = saved.map(a => ({ version: "v1.0.0", ...a }));
     } else {
-      apps = DEFAULT_APPS.map(a => ({...a}));
+      apps = DEFAULT_APPS.map(a => ({ version: "v1.0.0", ...a }));
     }
-  } catch(e) { apps = DEFAULT_APPS.map(a => ({...a})); }
+  } catch(e) { apps = DEFAULT_APPS.map(a => ({ version: "v1.0.0", ...a })); }
 }
 function saveApps() {
   localStorage.setItem(LS_KEY, JSON.stringify(apps));
@@ -847,9 +859,10 @@ function buildCard(app) {
   const body = document.createElement("div");
   body.className = "card-body";
 
-  const head = document.createElement("div"); head.className = "card-head";
-  const iconSm = document.createElement("div"); iconSm.className = "card-icon-sm"; iconSm.textContent = app.icon;
-  const title = document.createElement("div"); title.className = "card-title"; title.textContent = app.name;
+  const title = document.createElement("div"); title.className = "card-title";
+  const nameSpan = document.createElement("span"); nameSpan.textContent = app.name;
+  const verBadge = document.createElement("span"); verBadge.className = "card-ver"; verBadge.textContent = app.version || "v1.0.0";
+  title.appendChild(nameSpan); title.appendChild(verBadge);
   head.appendChild(iconSm); head.appendChild(title);
 
   const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = app.desc;
@@ -943,6 +956,8 @@ function openEditor(card, app) {
 
   // Name
   ef.appendChild(makeRow("アプリ名", mkInput("text", app.name, "ef-name-" + app.id)));
+  // Version
+  ef.appendChild(makeRow("バージョン (ver. 数)", mkInput("text", app.version || "v1.0.0", "ef-ver-" + app.id)));
   // Icon
   ef.appendChild(makeRow("アイコン（絵文字）", mkInput("text", app.icon, "ef-icon-" + app.id)));
   // Desc
@@ -1053,12 +1068,13 @@ function openEditor(card, app) {
   const deleteBtn = document.createElement("button"); deleteBtn.type = "button"; deleteBtn.className = "ef-delete"; deleteBtn.textContent = "🗑️ 削除";
 
   saveBtn.addEventListener("click", () => {
-    const name  = ef.querySelector("#ef-name-" + app.id).value.trim();
-    const icon  = ef.querySelector("#ef-icon-" + app.id).value.trim();
-    const desc  = ef.querySelector("#ef-desc-" + app.id).value.trim();
-    const tags  = ef.querySelector("#ef-tags-" + app.id).value.split(",").map(t=>t.trim()).filter(Boolean);
-    const logo  = ef.querySelector("#ef-logo-" + app.id).value.trim();
-    const cat   = ef.querySelector("#ef-cat-" + app.id).value.trim();
+    const name    = ef.querySelector("#ef-name-" + app.id).value.trim();
+    const version = ef.querySelector("#ef-ver-" + app.id).value.trim() || "v1.0.0";
+    const icon    = ef.querySelector("#ef-icon-" + app.id).value.trim();
+    const desc    = ef.querySelector("#ef-desc-" + app.id).value.trim();
+    const tags    = ef.querySelector("#ef-tags-" + app.id).value.split(",").map(t=>t.trim()).filter(Boolean);
+    const logo    = ef.querySelector("#ef-logo-" + app.id).value.trim();
+    const cat     = ef.querySelector("#ef-cat-" + app.id).value.trim();
     const linkRows = linksContainer.querySelectorAll(".ef-link-row");
     const links = [];
     linkRows.forEach(row => {
@@ -1066,7 +1082,7 @@ function openEditor(card, app) {
       const url   = row.querySelector(".ef-link-url").value.trim();
       if (url) links.push({label, url});
     });
-    Object.assign(app, {name, icon, desc, tags, logo, category: cat, links});
+    Object.assign(app, {name, version, icon, desc, tags, logo, category: cat, links});
     saveApps(); render();
   });
   cancelBtn.addEventListener("click", () => {
