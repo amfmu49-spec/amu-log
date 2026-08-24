@@ -251,6 +251,36 @@
     }
     .ef-delete:hover { background:#d32f2f; color:#fff; border-color:#d32f2f; }
 
+    /* Logo Editor Controls */
+    .ef-logo-ctrls { display:flex; flex-direction:column; gap:.4rem; width:100%; }
+    .ef-logo-row { display:flex; gap:.4rem; align-items:center; }
+    .ef-file-btn {
+      font-family:inherit; font-size:.75rem; font-weight:500;
+      padding:6px 12px; border-radius:var(--r-sm);
+      background:var(--tag-bg); color:var(--text); border:1px solid var(--border);
+      cursor:pointer; transition:all var(--ease); flex-shrink:0; display:inline-flex; align-items:center; gap:4px;
+      white-space:nowrap;
+    }
+    .ef-file-btn:hover { background:#e4e4e0; border-color:#aaa; }
+    .ef-logo-preview-box {
+      display:flex; align-items:center; gap:.6rem; padding:6px 10px;
+      background:var(--bg); border:1px solid var(--border); border-radius:var(--r-sm);
+    }
+    .ef-logo-thumb { width:38px; height:38px; object-fit:cover; border-radius:6px; border:1px solid var(--border); flex-shrink:0; }
+    .ef-logo-del {
+      font-family:inherit; font-size:.72rem; color:#d32f2f; background:none; border:none;
+      cursor:pointer; padding:3px 8px; border-radius:4px; transition:background var(--ease); margin-left:auto;
+    }
+    .ef-logo-del:hover { background:#ffebee; }
+
+    .card.edit-mode .card-logo-upload { opacity: 0.85; }
+    .card.edit-mode .card-logo-upload:hover { opacity: 1; background: rgba(0,0,0,0.75); }
+    .card-logo.drag-over {
+      outline: 2px dashed #0070f3 !important;
+      outline-offset: -4px;
+      background: rgba(0,112,243,0.12) !important;
+    }
+
     /* Toast Notification */
     .toast {
       position: fixed; bottom: 24px; right: 24px; z-index: 1000;
@@ -296,6 +326,7 @@
     <a href="#" class="brand"><span class="brand-dot"></span>AMU LOG<em> by evoli</em></a>
     <div class="hd-right">
       <span class="pill" id="app-count">-- apps</span>
+      <button id="add-app-btn" title="新しいアプリをリストに追加" style="font-family:inherit; font-size:.78rem; font-weight:600; padding:6px 14px; border-radius:var(--r-sm); background:#0070f3; color:#fff; border:none; cursor:pointer; transition:opacity 0.2s;">＋ 新規追加</button>
       <button id="edit-toggle" title="編集モードを切り替え">✏️ 編集</button>
     </div>
   </div>
@@ -763,11 +794,53 @@ function buildCard(app) {
   // Upload overlay (edit mode)
   const uploadOverlay = document.createElement("div");
   uploadOverlay.className = "card-logo-upload";
-  uploadOverlay.innerHTML = '<span class="card-logo-upload-icon">📷</span><span>ロゴを変更</span>';
+  uploadOverlay.innerHTML = '<span class="card-logo-upload-icon">📷</span><span>ロゴ画像を選択</span>';
   uploadOverlay.addEventListener("click", e => {
-    e.preventDefault(); logoTargetId = app.id; logoInput.click();
+    e.preventDefault();
+    if (!card.classList.contains("edit-mode")) {
+      openEditor(card, app);
+    }
+    const hiddenFileInput = card.querySelector(".ef-file-input-hidden");
+    if (hiddenFileInput) {
+      hiddenFileInput.click();
+    } else {
+      logoTargetId = app.id; logoInput.click();
+    }
   });
   logoArea.appendChild(uploadOverlay);
+
+  // Drag & drop support in edit mode
+  logoArea.addEventListener("dragover", e => {
+    if (!card.classList.contains("edit-mode")) return;
+    e.preventDefault();
+    logoArea.classList.add("drag-over");
+  });
+  logoArea.addEventListener("dragleave", e => {
+    logoArea.classList.remove("drag-over");
+  });
+  logoArea.addEventListener("drop", e => {
+    if (!card.classList.contains("edit-mode")) return;
+    e.preventDefault();
+    logoArea.classList.remove("drag-over");
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const val = ev.target.result;
+        const logoInputInEdit = card.querySelector("#ef-logo-" + app.id);
+        if (logoInputInEdit) {
+          logoInputInEdit.value = val;
+          logoInputInEdit.dispatchEvent(new Event("input"));
+        } else {
+          app.logo = val;
+          saveApps();
+          render();
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
   card.appendChild(logoArea);
 
   // Body
@@ -878,12 +951,82 @@ function openEditor(card, app) {
   ef.appendChild(makeRow("説明", taEl));
   // Tags
   ef.appendChild(makeRow("タグ（カンマ区切り）", mkInput("text", app.tags.join(", "), "ef-tags-" + app.id)));
-  // Logo URL
-  const logoRow = makeRow("ロゴ画像 URL / パス", mkInput("text", app.logo || "", "ef-logo-" + app.id));
+  
+  // Logo editor controls
+  const logoCtrls = document.createElement("div"); logoCtrls.className = "ef-logo-ctrls";
+
+  const logoInputEl = mkInput("text", app.logo || "", "ef-logo-" + app.id);
+  logoInputEl.placeholder = "URL または 画像ファイルパス / DataURL";
+
+  const logoRowTop = document.createElement("div"); logoRowTop.className = "ef-logo-row";
+  
+  const fileSelectBtn = document.createElement("button");
+  fileSelectBtn.type = "button"; fileSelectBtn.className = "ef-file-btn";
+  fileSelectBtn.innerHTML = "📁 画像を選択";
+
+  const fileInputHidden = document.createElement("input");
+  fileInputHidden.type = "file"; fileInputHidden.accept = "image/*"; fileInputHidden.className = "ef-file-input-hidden"; fileInputHidden.style.display = "none";
+
+  fileSelectBtn.addEventListener("click", () => fileInputHidden.click());
+
+  const previewBox = document.createElement("div"); previewBox.className = "ef-logo-preview-box";
+  const thumbImg = document.createElement("img"); thumbImg.className = "ef-logo-thumb";
+  const previewText = document.createElement("span"); previewText.style.fontSize = ".75rem"; previewText.style.color = "var(--text-2)"; previewText.style.flex = "1"; previewText.textContent = "ロゴ設定中";
+  const clearBtn = document.createElement("button"); clearBtn.type = "button"; clearBtn.className = "ef-logo-del"; clearBtn.textContent = "❌ ロゴ解除";
+
+  const logoArea = card.querySelector(".card-logo");
+
+  const updateLogoPreview = (val) => {
+    logoInputEl.value = val;
+    let imgEl = logoArea.querySelector("img");
+    if (val) {
+      if (!imgEl) {
+        imgEl = document.createElement("img");
+        logoArea.prepend(imgEl);
+      }
+      imgEl.src = val;
+      imgEl.style.display = "block";
+      const emojiEl = logoArea.querySelector(".logo-emoji");
+      if (emojiEl) emojiEl.style.display = "none";
+      
+      previewBox.style.display = "flex";
+      thumbImg.src = val;
+    } else {
+      if (imgEl) imgEl.remove();
+      const emojiEl = logoArea.querySelector(".logo-emoji");
+      if (emojiEl) emojiEl.style.display = "block";
+      previewBox.style.display = "none";
+    }
+  };
+
+  fileInputHidden.addEventListener("change", () => {
+    const file = fileInputHidden.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => updateLogoPreview(e.target.result);
+      reader.readAsDataURL(file);
+    }
+  });
+
+  logoInputEl.addEventListener("input", e => updateLogoPreview(e.target.value.trim()));
+  clearBtn.addEventListener("click", () => updateLogoPreview(""));
+
+  previewBox.appendChild(thumbImg); previewBox.appendChild(previewText); previewBox.appendChild(clearBtn);
+  if (!app.logo) previewBox.style.display = "none";
+  else thumbImg.src = app.logo;
+
+  logoRowTop.appendChild(logoInputEl);
+  logoRowTop.appendChild(fileSelectBtn);
+  logoCtrls.appendChild(logoRowTop);
+  logoCtrls.appendChild(previewBox);
+  logoCtrls.appendChild(fileInputHidden);
+
   const logoHint = document.createElement("div"); logoHint.className = "ef-sub-label";
-  logoHint.textContent = "上の画像エリアから直接アップロードも可能";
-  logoRow.appendChild(logoHint);
-  ef.appendChild(logoRow);
+  logoHint.textContent = "※ 画像ファイルを選択、カードへのドラッグ＆ドロップ、またはURLを入力可能です。";
+  logoCtrls.appendChild(logoHint);
+
+  ef.appendChild(makeRow("ロゴ画像", logoCtrls));
+
   // Category
   ef.appendChild(makeRow("カテゴリ", mkInput("text", app.category, "ef-cat-" + app.id)));
 
@@ -927,7 +1070,7 @@ function openEditor(card, app) {
     saveApps(); render();
   });
   cancelBtn.addEventListener("click", () => {
-    card.classList.remove("edit-mode"); ef.remove();
+    card.classList.remove("edit-mode"); ef.remove(); render();
   });
   deleteBtn.addEventListener("click", () => deleteApp(app));
 
@@ -967,6 +1110,33 @@ function makeLinkRow(label, url) {
 render();
 document.getElementById("ft-date").textContent =
   "最終更新: " + new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric"});
+
+const addAppBtn = document.getElementById("add-app-btn");
+if (addAppBtn) {
+  addAppBtn.addEventListener("click", () => {
+    const newApp = {
+      id: "app-" + Date.now(),
+      name: "新規アプリ",
+      icon: "🚀",
+      desc: "アプリの概要説明を入力してください。",
+      tags: ["新規"],
+      category: activeCat === "すべて" ? "その他" : activeCat,
+      logo: "",
+      links: [{ label: "local", url: "" }]
+    };
+    apps.unshift(newApp);
+    saveApps();
+    render();
+    if (!document.body.classList.contains("editing")) {
+      document.body.classList.add("editing");
+    }
+    const newCard = document.getElementById("card-" + newApp.id);
+    if (newCard) {
+      openEditor(newCard, newApp);
+      newCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+}
 
 document.getElementById("reset-apps-btn").addEventListener("click", () => {
   if (confirm("全編集・削除内容をクリアし、初期のアプリリストに戻しますか？")) {
